@@ -12,15 +12,26 @@ app.get('/', (req, res) => {
 
 app.post('/auth/login', (req, res) => {
   console.log(req.body);
+
+  if (req.body.email === 'test2test.ru') {
+    const token = jwt.sign({
+      email: req.body.email,
+      fullNmae: 'Вася Пупкин',
+    },
+      'secret123',
+    );
+  }
+
   res.json({
     success: true,
+    token,
   });
 });
 
 app.listen(4444, (err) => {
-if (err) {
-  return console.log(err);
-}
+  if (err) {
+    return console.log(err);
+  }
 
-console.log('Server OK');
+  console.log('Server OK');
 });
