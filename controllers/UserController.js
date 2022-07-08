@@ -13,7 +13,7 @@ export const register = async (req, res) => {
       email: req.body.email,
       fullName: req.body.fullName,
       avatarUrl: req.body.avatarUrl,
-      passwodHash: hash,
+      passwordHash: hash,
     });
 
     const user = await doc.save();
@@ -28,13 +28,12 @@ export const register = async (req, res) => {
       },
     );
 
-    const { passwodHash, ...userData } = user._doc;
+    const { passwordHash, ...userData } = user._doc;
 
     res.json({
-      ...userData._doc,
+      ...userData,
       token,
     });
-
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -53,7 +52,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwodHash);
+    const isValidPass = await bcrypt.compare(req.body.password, user._doc.passwordHash);
 
     if (!isValidPass) {
       return res.status(400).json({
@@ -71,13 +70,13 @@ export const login = async (req, res) => {
       },
     );
 
-    const { passwodHash, ...userData } = user._doc;
+    const { passwordHash, ...userData } = user._doc;
 
     res.json({
       ...userData,
       token,
     });
-  } catch {
+  } catch (err) {
     console.log(err);
     res.status(500).json({
       message: 'Не удалось авторизоваться',
@@ -94,7 +93,8 @@ export const getMe = async (req, res) => {
         message: 'Пользователь не найден',
       });
     }
-    const { passwodHash, ...userData } = user._doc;
+
+    const { passwordHash, ...userData } = user._doc;
 
     res.json(userData);
   } catch (err) {
