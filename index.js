@@ -5,10 +5,9 @@ import mongoose from 'mongoose';
 
 import { registerValidation, loginValidation, postCreateValidation } from './validations.js';
 
-import checkAuth from './utils/checkAuth.js';
+import { handleValidationErrors, checkAuth } from './utils/index.js';
 
-import * as UserController from './controllers/UserController.js';
-import * as PostController from './controllers/PostController.js';
+import { UserController, PostController } from './controllers/index.js';
 
 mongoose
   .connect('mongodb+srv://admin:wwwwww@cluster0.bmznc.mongodb.net/blog?retryWrites=true&w=majority')
@@ -43,9 +42,9 @@ app.post('/upload', checkAuth, upload.single('image'), (req, res) => {
 
 app.get('/posts', PostController.getAll);
 app.get('/posts/:id', PostController.getOne);
-app.post('/posts', checkAuth, postCreateValidation, PostController.create);
+app.post('/posts', checkAuth, postCreateValidation, handleValidationErrors, PostController.create);
 app.delete('/posts/:id', checkAuth, PostController.remove);
-app.patch('/posts/:id', checkAuth,postCreateValidation, PostController.update);
+app.patch('/posts/:id', checkAuth, postCreateValidation, handleValidationErrors, PostController.update);
 
 app.listen(4444, (err) => {
   if (err) {
